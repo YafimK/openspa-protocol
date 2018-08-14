@@ -27,6 +27,12 @@ In case any of the previous fail, the server silently drops the packet - no erro
 OpenSPA protocol defines two types of packets: request and response.
 Both packets contain the same formatted header.
 
+All packets have an upper bound of 1232 octets.
+The upper bound of OpenSPA packets is inherently affected by the data link layer MTU size.
+A common MTU is Ethernet's 1500 octet MTU.
+The decision to limit the size of OpenSPA packets to only 1232 was decided empirically.
+This would allow OpenSPA to be used in environments where IP header packet manipulation is performed since the reduced size would allow such techniques to be used without splitting the packet into multiple pieces.
+
 ### Header
 The packet header contains the following fields:
 - **Version (4 bits)**: Specifies the version of the protocol (0001 = v1).
@@ -43,7 +49,9 @@ The packet header contains the following fields:
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </pre>
 
-### Requestc
+Thus the header size (incl. reserved fields) is 2 octets.
+
+### Request
 Request packet (encrypted) payload.
 - **Timestamp (8 octets)**: A UNIX 64-bit timestamp when the packet was created.
 - **Client Device ID (16 octets)**: The unique UUID of the device.
@@ -112,6 +120,7 @@ that we are requiring access to.
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </pre>
 
+The maximum total size of the OpenSPA request payload (incl. reserved fields) is therefore 1230 octets.
 
 
 ### Response
@@ -150,6 +159,10 @@ aforementioned protocol/port.
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </pre>
+
+The maximum total size of the OpenSPA response payload (incl. reserved fields) is therefore 1230 octets.
+
+
 ## Signature & Encryption
 Currently there is only support for a single signature and encryption method.
 We encourage suggestions regarding which methods to add.
